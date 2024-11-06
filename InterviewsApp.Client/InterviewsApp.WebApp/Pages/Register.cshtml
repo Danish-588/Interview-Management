@@ -1,0 +1,42 @@
+﻿@page
+@model InterviewsApp.WebApp.Pages.RegisterModel
+@{
+    ViewData["Title"] = "Registration";
+}
+
+<style>
+    td {
+        padding:10px;
+    }
+</style>
+
+<script src="/js/register-page.js"></script>
+<script>document.getElementById("logout-button").hidden = true;</script>
+<div>
+    <h3 class="localizable">Loc.Register.Title</h3>
+
+    <table>
+        <tr>
+            <td class="localizable">Loc.Register.Name: </td>
+            <td><input id="name" type="text" /></td>
+        </tr>
+        <tr>
+            <td class="localizable">Loc.Login.Login: </td>
+            <td><input id="login" type="text" /></td>
+        </tr>
+        <tr>
+            <td class="localizable">Loc.Login.Password: </td>
+            <td><input id="password" type="password" /></td>
+        </tr>
+        <tr>
+            <td class="localizable">Loc.Register.PasswordConfirmation: </td>
+            <td><input id="repeat-password" type="password" /></td>
+        </tr>
+    </table>
+    
+    <button id="register-button" onclick="register()" class="localizable">Loc.Register.Register</button>
+
+    <p class="localizable" id="message"></p>
+    <a id="manual-redirect" style="visibility:hidden" href="/Login" class="localizable">Loc.Common.GoToMainPage</a>
+</div>
+<script>if(Cookies.get(currentUserId)) location.assign("/")</script>

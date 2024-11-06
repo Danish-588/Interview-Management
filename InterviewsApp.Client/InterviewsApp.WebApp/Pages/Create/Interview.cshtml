@@ -1,0 +1,47 @@
+﻿@page
+@model InterviewsApp.WebApp.Pages.Create.InterviewModel
+@{
+    ViewData["Title"] = "Create Interview";
+}
+<style>
+    td {
+        padding: 10px;
+    }
+    td.edit-cell {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    tbody{
+        width:fit-content;
+    }
+    button {
+        margin-left: 10px;
+    }
+</style>
+<div>
+    <h3 class="localizable">Loc.AddInterviewPage.Title</h3>
+
+    <table>
+        <tr>
+            <td class="localizable">Loc.AddInterviewPage.InterviewName</td>
+            <td><input id="interviewName" type="text" style="width:100%"/></td>
+        </tr>
+        <tr>
+            <td class="localizable">Loc.AddInterviewPage.InterviewTime</td>
+            <td><input id="interviewTime" type="datetime-local" /></td>
+        </tr>
+        <tr>
+            <td class="localizable">Loc.AddInterviewPage.PositionName</td>
+            <td class="edit-cell"><select id="position-select"></select><button class="localizable"  id="hidden-button" style="display:none" onclick="location.assign('/Create/Position')">Loc.AddInterviewPage.AddPosition</button></td>
+        </tr>
+    </table>
+    
+    <button class="localizable" id="create-button" onclick="createInterview()">Loc.AddInterviewPage.CreateInterview</button>
+
+    
+    <p class="localizable" id="message"></p>
+    <a class="localizable" id="manual-redirect" style="visibility:hidden" href="/">Loc.Common.GoToMainPage</a>
+</div>
+<script src="/js/creation-pages/create-interview-page.js"></script>
+<script>getPositions('@Model.CreatedPosition')</script>
