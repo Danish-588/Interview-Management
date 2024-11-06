@@ -1,145 +1,104 @@
-# Interviews Manager
+# Interviews Management System
 
+A web application that allows users to manage their job interviews.
 
-Small app that allows user to manage his job interviews.
+## Commands
 
-Stack: ASP.NET WebAPI(.NET 6), AutoMapper, Entity Framework and PostgreSQL for backend; ASP.NET WebApp (Razor Pages) and vanilla JavaScript for frontend, deploying with Docker. Unit-tested with xUnit, AutoFixture and Moq.
+- **Run**: `docker-compose up -d --build`
+- **Stop**: `docker-compose down`
+- **Enter Database**: `docker exec -it interviewsapp-db psql -U postgres -d interviewsappdb`
 
+---
 
-# Commands
+## Stack 
 
-- Run ```docker-compose up -d --build```
-- Kill - ```docker-compose down ```
-- Enter db - ```docker exec -it interviewsapp-db psql -U postgres -d interviewsappdb```
+### Backend  
+The backend is powered by **ASP.NET Core**, a high-performance, cross-platform framework that handles the application's business logic and API endpoints. It’s ideal for building secure, scalable web applications.
 
+### Database  
+**PostgreSQL** is used for data storage, ensuring reliability, data integrity, and efficient querying. It handles all application data, including users, companies, interviews, and positions.
 
-# Tables
+### Frontend  
+The frontend is server-rendered using ASP.NET Core’s **Razor views** and basic HTML/CSS/JavaScript, delivering a responsive and interactive user interface without relying on a separate JavaScript framework.
 
+### Containerization  
+The application runs in **Docker** containers, which package all dependencies for consistency across environments. **Docker Compose** manages services like the backend and database, simplifying deployment and scaling.
+
+---
+
+## Tables
 
 ### `Companies` Table
-| Column | Type     | Collation | Nullable | Default |
-|--------|----------|-----------|----------|---------|
-| Id     | `uuid`   |           | not null |         |
-| Name   | `text`   |           | not null |         |
-| Rating | `smallint` |         | not null |         |
+| Column | Type     | Nullable | Default |
+|--------|----------|----------|---------|
+| Id     | uuid     | not null |         |
+| Name   | text     | not null |         |
+| Rating | smallint | not null |         |
 
-**Indexes:**
-- `PK_Companies` PRIMARY KEY, btree (Id)
-
-**Referenced by:**
-- Table `Positions`, Foreign Key `FK_Positions_Companies_CompanyId` on `CompanyId` → `Companies(Id)` (ON DELETE CASCADE)
-
----
+- **Primary Key**: `PK_Companies` on `Id`
+- **Referenced by**: `Positions` table with foreign key `CompanyId` (ON DELETE CASCADE)
 
 ### `Interviews` Table
-| Column     | Type                        | Collation | Nullable | Default |
-|------------|-----------------------------|-----------|----------|---------|
-| Id         | `uuid`                      |           | not null |         |
-| Name       | `text`                      |           | not null |         |
-| Date       | `timestamp with time zone`  |           | not null |         |
-| Comment    | `text`                      |           |          |         |
-| PositionId | `uuid`                      |           | not null |         |
+| Column     | Type                        | Nullable | Default |
+|------------|-----------------------------|----------|---------|
+| Id         | uuid                        | not null |         |
+| Name       | text                        | not null |         |
+| Date       | timestamp with time zone    | not null |         |
+| Comment    | text                        |          |         |
+| PositionId | uuid                        | not null |         |
 
-**Indexes:**
-- `PK_Interviews` PRIMARY KEY, btree (Id)
-- `IX_Interviews_PositionId` btree (PositionId)
-
-**Foreign Key Constraints:**
-- `FK_Interviews_Positions_PositionId` on `PositionId` → `Positions(Id)` (ON DELETE CASCADE)
-
----
+- **Primary Key**: `PK_Interviews` on `Id`
+- **Foreign Key**: `PositionId` references `Positions(Id)` (ON DELETE CASCADE)
 
 ### `Positions` Table
-| Column     | Type     | Collation | Nullable | Default |
-|------------|----------|-----------|----------|---------|
-| Id         | `uuid`   |           | not null |         |
-| Name       | `text`   |           | not null |         |
-| MoneyLower | `integer`|           | not null |         |
-| MoneyUpper | `integer`|           | not null |         |
-| City       | `text`   |           | not null |         |
-| Comment    | `text`   |           |          |         |
-
----
+| Column     | Type     | Nullable | Default |
+|------------|----------|----------|---------|
+| Id         | uuid     | not null |         |
+| Name       | text     | not null |         |
+| MoneyLower | integer  | not null |         |
+| MoneyUpper | integer  | not null |         |
+| City       | text     | not null |         |
+| Comment    | text     |          |         |
 
 ### `Users` Table
-| Column    | Type     | Collation | Nullable | Default |
-|-----------|----------|-----------|----------|---------|
-| Id        | `uuid`   |           | not null |         |
-| Name      | `text`   |           | not null |         |
-| Login     | `text`   |           | not null |         |
-| Password  | `text`   |           | not null |         |
-| IsActive  | `boolean`|           | not null |         |
-| Language  | `text`   |           |          |         |
+| Column    | Type     | Nullable | Default |
+|-----------|----------|----------|---------|
+| Id        | uuid     | not null |         |
+| Name      | text     | not null |         |
+| Login     | text     | not null |         |
+| Password  | text     | not null |         |
+| IsActive  | boolean  | not null |         |
+| Language  | text     |          |         |
 
-**Indexes:**
-- `PK_Users` PRIMARY KEY, btree (Id)
-
-**Referenced by:**
-- Table `Positions`, Foreign Key `FK_Positions_Users_UserId` on `UserId` → `Users(Id)` (ON DELETE CASCADE)
-
----
+- **Primary Key**: `PK_Users` on `Id`
+- **Referenced by**: `Positions` table with foreign key `UserId` (ON DELETE CASCADE)
 
 ### `__EFMigrationsHistory` Table
-| Column         | Type                   | Collation | Nullable | Default |
-|----------------|------------------------|-----------|----------|---------|
-| MigrationId    | `character varying(150)` |        | not null |         |
-| ProductVersion | `character varying(32)`  |         | not null |         |
+| Column         | Type                   | Nullable | Default |
+|----------------|------------------------|----------|---------|
+| MigrationId    | character varying(150) | not null |         |
+| ProductVersion | character varying(32)  | not null |         |
 
-**Indexes:**
-- `PK___EFMigrationsHistory` PRIMARY KEY, btree (MigrationId)
+- **Primary Key**: `PK___EFMigrationsHistory` on `MigrationId`
 
 ---
 
-# Core Tables and Relationships
-1.1 Companies Table
+## Core Tables and Relationships
 
-    Purpose: Stores information about companies involved in interviews or positions.
-    Key Fields: Id (primary key), Name (company name), and Rating (company rating).
-    Relationships: Referenced by the Positions table, meaning a position must be associated with a specific company.
-    Cascade Deletion: If a company is deleted, all associated positions in the Positions table are automatically deleted.
+- **Companies Table**  
+   Stores information about companies associated with job positions. A position must be linked to a company, and deleting a company will remove related positions.
 
-1.2 Positions Table
+- **Positions Table**  
+   Holds job position details, linking each to a company and managed by a user. Each position can have multiple interviews scheduled for it.
 
-    Purpose: Holds details about job positions within companies, which users can apply for.
-    Key Fields: Id (primary key), Name (job title), MoneyLower and MoneyUpper (salary range), City (location of the job), and Comment (additional notes).
-    Relationships:
-        Associated with Companies through the CompanyId field, indicating which company offers each position.
-        Likely related to the Users table to track which user posted or manages the position.
-        Used by the Interviews table to link each interview to a position.
+- **Interviews Table**  
+   Tracks interviews for specific positions with fields like name, date, and optional comments. Deleting a position also removes its related interviews.
 
-1.3 Interviews Table
+- **Users Table**  
+   Stores user profiles, including applicants, recruiters, or administrators, with fields like name, login, password, and active status. Users can manage job positions.
 
-    Purpose: Records details about interviews for specific positions.
-    Key Fields:
-        Id (primary key)
-        Name (name of the interview)
-        Date (scheduled date and time)
-        Comment (optional notes on the interview)
-        PositionId (foreign key to Positions), linking each interview to a job position.
-    Relationships:
-        Directly related to the Positions table by PositionId, so each interview is specific to a position.
-        Cascade deletion is enabled, meaning if a position is deleted, all related interviews are removed.
+- **Localizations Table**  
+   Manages translations and language-specific content for users based on their `Language` field.
 
-1.4 Users Table
-
-    Purpose: Stores user information, likely representing applicants, recruiters, or admin users.
-    Key Fields:
-        Id (primary key)
-        Name (user's full name)
-        Login (username or unique identifier)
-        Password (hashed password)
-        IsActive (boolean indicating if the user account is active)
-        Language (preferred language for localization purposes).
-    Relationships:
-        Associated with Positions through UserId, meaning users can be responsible for positions.
-        Cascade deletion on related positions if a user is deleted.
-
-1.5 Localizations Table (not fully detailed here)
-
-    Purpose: Likely used for managing language-specific translations for user interface elements and messages.
-    Role: Supports localization features in the app by storing key-value pairs for translations. The Language field in the Users table is probably used to match users with the correct localization data.
-
-1.6 __EFMigrationsHistory Table
-
-    Purpose: Used by Entity Framework (EF) to track schema migrations.
-    Role: Records all migrations that have been applied to the database schema. Not directly relevant to the application's business logic.
+- **__EFMigrationsHistory Table**  
+   Used by Entity Framework Core to track applied migrations, ensuring database schema consistency across updates.
